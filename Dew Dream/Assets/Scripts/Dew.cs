@@ -85,9 +85,7 @@ public class Dew : MonoBehaviour
             Gizmos.DrawRay(transform.position, Vector3.down * groundMaxDistance);
         }
     }
-    void CheckDie(){
-
-    }
+    
     IEnumerator LifeDecrease(){
         while(lifetime > 0){
             lifetime -= smoothness;
