@@ -11,15 +11,13 @@ public class Dew : MonoBehaviour
     public float groundMaxDistance;
     public float fullLife;
     public GameObject obj;
-    public Renderer rend;
-    public Color color;
-    public GameObject metrial;
+    Renderer rend;
+    Color color;
     Color colorStart = Color.blue;
     Color colorEnd = Color.gray;
     Rigidbody rigid;
     CapsuleCollider capsuleCollider;
     float smoothness = 0.02f;
-    SphereCollider collider;
     float lifetime;
     //GameManager gameManager;  // for stages
     //public AudioClip audioFinish, audioJump;
@@ -28,7 +26,7 @@ public class Dew : MonoBehaviour
     {
         rigid = GetComponent<Rigidbody>();
         //color = obj.GetComponent<Renderer>().material.color;
-        rend = obj.GetComponent<Renderer>();
+        rend = transform.GetChild(0).GetComponent<Renderer>();
         lifetime = fullLife;
         StartCoroutine("LifeDecrease");
     }

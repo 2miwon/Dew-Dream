@@ -345,6 +345,9 @@
 -r:"Library/Bee/artifacts/200b0aE.dag/Unity.VSCode.Editor.ref.dll"
 -r:"Library/Bee/artifacts/200b0aE.dag/UnityEditor.UI.ref.dll"
 -r:"Library/Bee/artifacts/200b0aE.dag/UnityEngine.UI.ref.dll"
+"Assets/IgniteCoders/Simple Water Shader/Info/Scripts/Readme.cs"
+"Assets/IgniteCoders/Simple Water Shader/Resources/WaterReflection.cs"
+"Assets/JellyShader/Scripts/JellyClickReceiver.cs"
 "Assets/Scripts/Dew.cs"
 -langversion:9.0
 
