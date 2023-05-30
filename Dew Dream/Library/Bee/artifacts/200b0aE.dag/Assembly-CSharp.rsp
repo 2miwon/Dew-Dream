@@ -349,6 +349,7 @@
 "Assets/IgniteCoders/Simple Water Shader/Resources/WaterReflection.cs"
 "Assets/JellyShader/Scripts/JellyClickReceiver.cs"
 "Assets/Scripts/Dew.cs"
+"Assets/Scripts/MainCamera.cs"
 -langversion:9.0
 
 /deterministic

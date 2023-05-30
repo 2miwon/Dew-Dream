@@ -40,6 +40,7 @@
      <Compile Include="Assets/IgniteCoders/Simple Water Shader/Info/Scripts/Readme.cs" />
      <Compile Include="Assets/IgniteCoders/Simple Water Shader/Resources/WaterReflection.cs" />
      <Compile Include="Assets/JellyShader/Scripts/JellyClickReceiver.cs" />
+     <Compile Include="Assets/Scripts/MainCamera.cs" />
      <None Include="Assets/JellyShader/Shaders/JellyShader.shader" />
     <Reference Include="UnityEngine">
         <HintPath>/Applications/Unity/Hub/Editor/2021.3.20f1/Unity.app/Contents/Managed/UnityEngine/UnityEngine.dll</HintPath>
