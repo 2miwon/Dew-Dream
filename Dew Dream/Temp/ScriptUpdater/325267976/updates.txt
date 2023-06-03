@@ -1,0 +1,2 @@
+Temp/ScriptUpdater/325267976/499763221_WeakPlatform.cs => Assets/Scripts/WeakPlatform.cs
+Temp/ScriptUpdater/325267976/1384652036_Dew.cs => Assets/Scripts/Dew.cs

@@ -21,8 +21,8 @@ public class Dew : MonoBehaviour
         KeyCode.Alpha3,
         KeyCode.Alpha4,
         KeyCode.Alpha5};
-    double mod;
-    bool modeChange;
+    public double mod;
+    double lastMod;
     bool LifeUP;
     public int savePointNum;
 
@@ -34,13 +34,14 @@ public class Dew : MonoBehaviour
     Rigidbody rigid;
     //GameManager gameManager;
     CapsuleCollider collider;
+    Transform graphic;
 
     Renderer rend;
     Color colorStart = new Color(57/255f, 221/255f, 208/255f, 255/255f);
     Color colorEnd = new Color(211/255f, 211/255f, 211/255f, 125/255f);
 
     private Camera camera;
-    public float distance;
+    public float CameraDistance;
 
     int readValInt;
     SerialPort sp = new SerialPort("COM3", 9600);
@@ -49,23 +50,27 @@ public class Dew : MonoBehaviour
     //AudioSource audioSource;
     void Awake(){
         rigid = GetComponent<Rigidbody>();
+        graphic = transform.GetChild(0);
         rend = transform.GetChild(0).GetComponent<Renderer>();
         obj = GameObject.Find("Player");
         collider = GetComponent<CapsuleCollider>();
         camera = Camera.main;
-    }
-    void Start(){
-        StartCoroutine("LifeDecrease");
 
         lifetime = fullLife;
-        mod = 0;
+        StartCoroutine("LifeDecrease");
+        mod = 1;
         LifeUP = false;
         savePointNum = 0;
-        modeChange = false;
+        lastMod = mod;
         MaxDistance = groundMaxDistance;
+        realSpeed = speed;
+    }
+    void Start(){
+        
     }
     void Update()
     {
+        Debug.Log(LifeUP);
         Debug.Log(lifetime);
         if(Delay(ref jumpDelay)) Jump();
         if(Delay(ref jumpDelay)) onGround();
@@ -75,14 +80,12 @@ public class Dew : MonoBehaviour
         changeCamera();
         Move();
         CheckNumKey();
-        if(modeChange) WaterStatus((float) mod);
+        if(lastMod != mod) WaterStatus((float) mod);
     }
     //
     // Basic
     //
-    bool Delay(ref int val){
-        return val-- <= 0;
-    }
+    bool Delay(ref int val){return val-- <= 0;}
     //
     // Arduino
     //
@@ -113,9 +116,11 @@ public class Dew : MonoBehaviour
     void Move(){
         if (Input.GetKey(KeyCode.LeftArrow)){
             transform.Translate(new Vector3(-realSpeed,0,0));
+            graphic.eulerAngles = new Vector3(-90,0,70);
         }
         if (Input.GetKey(KeyCode.RightArrow)){
             transform.Translate(new Vector3(realSpeed,0,0));
+            graphic.eulerAngles = new Vector3(-90,0,30);
         }
     }
     void onGround(){
@@ -145,52 +150,71 @@ public class Dew : MonoBehaviour
         else rigid.velocity = new Vector3(rigid.velocity.x, rigid.velocity.y, 0);
     }
     //
-    // Player Status
+    // Collision
     //
+    void OnTriggerEnter(Collider collision){
+        if(collision.GetComponent<Collider>().CompareTag("Respawn")){
+            int Snum = collision.GetComponent<Collider>().GetComponent<SavePoint>().SavePointNum;
+            if(savePointNum < Snum){
+                savePointNum = Snum;
+            }
+        }
+    }
     void OnTriggerStay(Collider collision){
-        realSpeed = 0;
-        //rigid.velocity.x = 0;
-        if(collision.transform.CompareTag("Respawn")){
+        if(collision.GetComponent<Collider>().CompareTag("Terrain")){
+            realSpeed = 0;
+        }
+        if(collision.GetComponent<Collider>().CompareTag("Respawn")){
             LifeUP = true;
-            Debug.Log("w2");
         }
         else LifeUP = false;
     }
     void OnTriggerExit(Collider collision){
-        realSpeed = speed;
+        if(collision.GetComponent<Collider>().CompareTag("Terrain")){
+            realSpeed = speed;
+        }
+        if(collision.GetComponent<Collider>().CompareTag("Respawn")){
+            LifeUP = false;
+        }
     }
+    //
+    // Player Status
+    //
     IEnumerator LifeDecrease(){
-        while(lifetime > 0 && lifetime <= fullLife){
-            if(LifeUP) lifetime += 5 * smoothness;
+        while(lifetime > 0){
+            if(LifeUP && lifetime <= fullLife) lifetime += 10 * smoothness;
             else lifetime -= smoothness;
             ColorChange(rend);
             yield return new WaitForSeconds(smoothness);
         }
     }
     void ColorChange(Renderer rend){
-        rend.material.color = Color.Lerp(colorEnd, colorStart, lifetime/10);
+        rend.material.color = Color.Lerp(colorEnd, colorStart, lifetime/fullLife);
     }
     void CheckNumKey(){
         for(int i = 0; i<keyCodes.Length; i++){
             if(Input.GetKey(keyCodes[i])){ 
                 mod = 0.5 + i * 0.25;
-                modeChange = true;
+                //modeChange = true;
             }
         }
     }
     void WaterStatus(float m){
         obj.transform.localScale = new Vector3(m, m, m);
         MaxDistance = groundMaxDistance * m;
-        rigid.mass = 1.0f + 0.45f * (m-1);
+        rigid.mass = 1.0f + 0.4f * (m-1);
         //jumpPower = 4 + 4 * (m-1);
-        modeChange = false;
-        distance = 10f + 5f * (m-1);
+        
+        CameraDistance = 10f + 5f * (m-1);
         speed = 0.05f - 0.01f * (m-1);
+
+        transform.Translate(new Vector3(0,(float) (0.5f * (m-lastMod)),0));
+        lastMod = m;
     }
     //
     // Camera Action
     //
     void changeCamera(){
-        camera.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, -distance);
+        camera.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, -CameraDistance);
     }
 }  

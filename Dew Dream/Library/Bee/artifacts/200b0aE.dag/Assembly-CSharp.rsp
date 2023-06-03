@@ -349,8 +349,12 @@
 "Assets/IgniteCoders/Simple Water Shader/Resources/WaterReflection.cs"
 "Assets/JellyShader/Scripts/JellyClickReceiver.cs"
 "Assets/Scripts/Arduino.cs"
+"Assets/Scripts/Button.cs"
 "Assets/Scripts/Dew.cs"
 "Assets/Scripts/GameManager.cs"
+"Assets/Scripts/Pulley.cs"
+"Assets/Scripts/SavePoint.cs"
+"Assets/Scripts/WeakPlatform.cs"
 -langversion:9.0
 
 /deterministic
