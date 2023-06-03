@@ -43,6 +43,7 @@ public class Dew : MonoBehaviour
 
     private Camera camera;
     public float CameraDistance;
+    bool cameraLock;
 
     int readValInt;
     SerialPort sp = new SerialPort("COM3", 9600);
@@ -58,16 +59,17 @@ public class Dew : MonoBehaviour
         camera = Camera.main;
 
         lifetime = fullLife;
-        StartCoroutine("LifeDecrease");
+        
         mod = 1;
         LifeUP = false;
         savePointNum = 0;
         lastMod = mod;
         MaxDistance = groundMaxDistance;
         realSpeed = speed;
+        cameraLock = false;
     }
     void Start(){
-        
+        StartCoroutine("LifeDecrease");
     }
     void Update()
     {
@@ -77,7 +79,7 @@ public class Dew : MonoBehaviour
         limitSpeed();
     }
     void FixedUpdate(){
-        changeCamera();
+        if(!cameraLock) changeCamera();
         Move();
         CheckNumKey();
         if(lastMod != mod) WaterStatus((float) mod);
@@ -215,6 +217,23 @@ public class Dew : MonoBehaviour
         transform.Translate(new Vector3(0,(float) (0.5f * (m-lastMod)),0));
         lastMod = m;
     }
+    void OnDie(){
+        Invoke("Respawn", 1.5f);
+        lifetime = fullLife;
+        StartCoroutine("LifeDecrease");
+    }
+    void Respawn(){
+        switch(savePointNum){
+            case 0:
+                transform.position = new Vector3(0,0,0);
+                break;
+            case 1:
+                transform.position = new Vector3(71, -5, 0);
+                break;
+            default:
+                break;
+        }
+    }
     //
     // Camera Action
     //
@@ -222,10 +241,11 @@ public class Dew : MonoBehaviour
         camera.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, -CameraDistance);
     }
     IEnumerator ZoomIn(){
-        while(lifetime > 0){
+        cameraLock = true;
+        while(true){
             
             yield return new WaitForSeconds(smoothness);
         }
-        Debug.Log("");
+        cameraLock = false;
     }
 }  
