@@ -33,7 +33,7 @@ public class Button : MonoBehaviour
         float move = 6.0f;
         while(move > 0){
             move -= smoothness;
-            target.transform.Translate(new Vector3(0,-smoothness,0));
+            target.transform.Translate(new Vector3(0,+smoothness,0));
             yield return new WaitForSeconds(smoothness);
         }
     }

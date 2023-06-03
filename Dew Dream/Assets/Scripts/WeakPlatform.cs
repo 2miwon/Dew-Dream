@@ -4,46 +4,65 @@ using UnityEngine;
 
 public class WeakPlatform : MonoBehaviour
 {
-    //public float ReactionTime;
+    Renderer rend;
     public float RespwanTime;
-    int respawnDelay;
+    //int respawnDelay;
     public float BreakTime; // 몇 초 후에 깨지는 지
-    int breakLatency;
+    //int breakLatency;
     public float MaxLoad;
     bool exist;
+    private Material originalMaterial;
+    private Material transparentMaterial;
     void Awake(){
         exist = true;
-        respawnDelay = (int) (RespwanTime * 60.0f);
-        breakLatency = -1;
+        //respawnDelay = (int) (RespwanTime * 60.0f);
+        rend = transform.parent.GetComponent<Renderer>();
+        //breakLatency = -1;
     }
     void Start(){
-
+        originalMaterial = transform.parent.GetComponent<Renderer>().material;
+        transparentMaterial = new Material(originalMaterial); // 원래의 머티리얼을 복사하여 새로운 투명한 머티리얼 생성
+        transparentMaterial.color = new Color(1f, 1f, 1f, 0.5f); // 투명도 조절 (4번째)
     }
     void Update(){
-        if(Delay(ref respawnDelay) && !exist)Respawn();
-    }
-    void FixedUpdate(){
         
     }
+    void FixedUpdate(){
+    
+    }
     bool Delay(ref int val){return val-- <= 0;}
+    /*
     bool Latency(ref int val, float threshold){
+        
         while(val++ > (int)(threshold*60.0f))
         val = -1;
         return true;
-    }
+    }*/
     void OnTriggerEnter(Collider collision){
-        if(collision.GetComponent<Collider>().GetComponent<GameObject>().GetComponent<Dew>().mod >= 1.2){
-            Break();
+        try{
+            if(collision.GetComponent<Collider>().GetComponent<Dew>().mod >= MaxLoad){
+                Debug.Log("check");
+                Invoke("Break", BreakTime);
+            }
+        }catch{
+
         }
+        
     }
     void Break(){
-        if(Latency(ref breakLatency ,BreakTime)){
-            gameObject.SetActive(false);
-            exist = false;
-        }
+        gameObject.GetComponent<BoxCollider>().enabled = false;
+        transform.parent.GetComponent<BoxCollider>().enabled = false;
+        SetTransparent();
+        exist = false;
+        Invoke("Respawn", RespwanTime);
     }
     void Respawn(){
-        gameObject.SetActive(true);
+        rend.material = originalMaterial;
+        gameObject.GetComponent<BoxCollider>().enabled = true;
+        transform.parent.GetComponent<BoxCollider>().enabled = true;
         exist = true;
+    }
+    void SetTransparent(){
+        rend.material = transparentMaterial;
     }
 }

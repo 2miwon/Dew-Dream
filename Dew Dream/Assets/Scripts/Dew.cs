@@ -25,6 +25,7 @@ public class Dew : MonoBehaviour
     double lastMod;
     bool LifeUP;
     public int savePointNum;
+    public bool DoubleJump = false;
 
     float smoothness = 0.02f;
     float lifetime;
@@ -70,8 +71,7 @@ public class Dew : MonoBehaviour
     }
     void Update()
     {
-        Debug.Log(LifeUP);
-        Debug.Log(lifetime);
+        //Debug.Log(lifetime);
         if(Delay(ref jumpDelay)) Jump();
         if(Delay(ref jumpDelay)) onGround();
         limitSpeed();
@@ -129,7 +129,10 @@ public class Dew : MonoBehaviour
                             Vector3.down, 
                             out RaycastHit hit, new Quaternion(), 
                             MaxDistance)){
-            if(rigid.velocity.y <= 0) jumpChance = savePointNum + 1;
+            if(rigid.velocity.y <= 0){
+                if(DoubleJump) jumpChance = 2;
+                else jumpChance = 1;
+            } 
         }
     }
     void OnDrawGizmos(){
@@ -187,6 +190,7 @@ public class Dew : MonoBehaviour
             ColorChange(rend);
             yield return new WaitForSeconds(smoothness);
         }
+        Debug.Log("Die");
     }
     void ColorChange(Renderer rend){
         rend.material.color = Color.Lerp(colorEnd, colorStart, lifetime/fullLife);
@@ -216,5 +220,12 @@ public class Dew : MonoBehaviour
     //
     void changeCamera(){
         camera.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, -CameraDistance);
+    }
+    IEnumerator ZoomIn(){
+        while(lifetime > 0){
+            
+            yield return new WaitForSeconds(smoothness);
+        }
+        Debug.Log("");
     }
 }  
