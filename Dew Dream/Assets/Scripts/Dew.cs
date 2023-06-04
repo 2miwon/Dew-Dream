@@ -90,7 +90,11 @@ public class Dew : MonoBehaviour
         if(!cameraLock) changeCamera();
         Move();
         CheckNumKey();
-        if(lastMod != mod) WaterStatus((float) mod);
+        if(lastMod != mod){
+            if(lastMod < mod) Audio(2);
+            else Audio(3);
+            WaterStatus((float) mod);
+        }
     }
     //
     // Basic
@@ -174,6 +178,7 @@ public class Dew : MonoBehaviour
             if(savePointNum < Snum){
                 savePointNum = Snum;
             }
+            collision.GetComponent<Collider>().GetComponent<AudioSource>().Play();
         }
     }
     void OnTriggerStay(Collider collision){
