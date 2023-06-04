@@ -23,7 +23,9 @@ public class SavePoint : MonoBehaviour
         if(collision.GetComponent<Collider>().CompareTag("Player")){
             if(Player.GetComponent<Dew>().savePointNum < SavePointNum){
                 Debug.Log("Save! :" + SavePointNum);
-                if(doubleJumpFlag) Player.GetComponent<Dew>().DoubleJump = true;
+                //if(doubleJumpFlag)
+              
+                //Player.GetComponent<Dew>().DoubleJump = true;
                 Player.GetComponent<Dew>().savePointNum = SavePointNum;
             }
         }

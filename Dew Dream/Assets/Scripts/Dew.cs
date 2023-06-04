@@ -25,7 +25,7 @@ public class Dew : MonoBehaviour
     double lastMod;
     bool LifeUP;
     public int savePointNum;
-    public bool DoubleJump = false;
+    bool DoubleJump = false;
 
     float smoothness = 0.02f;
     float lifetime;
@@ -48,8 +48,9 @@ public class Dew : MonoBehaviour
     int readValInt;
     SerialPort sp = new SerialPort("COM3", 9600);
 
-    //public AudioClip audioFinish, audioJump;
-    //AudioSource audioSource;
+    public AudioClip audioJump;
+    AudioSource audioSource;
+
     void Awake(){
         rigid = GetComponent<Rigidbody>();
         graphic = transform.GetChild(0);
@@ -67,6 +68,7 @@ public class Dew : MonoBehaviour
         MaxDistance = groundMaxDistance;
         realSpeed = speed;
         cameraLock = false;
+        audioSource = GetComponent<AudioSource>();
     }
     void Start(){
         StartCoroutine("LifeDecrease");
@@ -111,8 +113,8 @@ public class Dew : MonoBehaviour
             jumpDelay = 60;
             //anim.SetBool("isJumping", true);
 
-            //audioSource.clip = audioJump;
-            //audioSource.Play();
+            audioSource.clip = audioJump;
+            audioSource.Play();
         }
     }
     void Move(){
@@ -132,8 +134,9 @@ public class Dew : MonoBehaviour
                             out RaycastHit hit, new Quaternion(), 
                             MaxDistance)){
             if(rigid.velocity.y <= 0){
-                if(DoubleJump) jumpChance = 2;
-                else jumpChance = 1;
+                //if(DoubleJump) jumpChance = 2;
+                //else jumpChance = 1;
+                jumpChance = savePointNum + 1;
             } 
         }
     }
