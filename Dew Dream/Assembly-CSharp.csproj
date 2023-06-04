@@ -60,12 +60,10 @@
     <Compile Include="Assets/Scripts/MainCamera.cs" />
     <Compile Include="Assets/JellyShader/Scripts/JellyClickReceiver.cs" />
     <Compile Include="Assets/Scripts/Arduino.cs" />
-    <Compile Include="Assets/IgniteCoders/Simple Water Shader/Info/Scripts/Readme.cs" />
     <Compile Include="Assets/Scripts/GameManager.cs" />
     <Compile Include="Assets/Scripts/WeakPlatform.cs" />
     <Compile Include="Assets/Scripts/PlayMusicOperator.cs" />
     <Compile Include="Assets/Scripts/Dew.cs" />
-    <Compile Include="Assets/IgniteCoders/Simple Water Shader/Resources/WaterReflection.cs" />
     <Compile Include="Assets/Scripts/Button.cs" />
     <Compile Include="Assets/Scripts/StartButton.cs" />
     <Compile Include="Assets/Scripts/BackButton.cs" />
