@@ -3396,9 +3396,10 @@ GameObject:
   - component: {fileID: 912067469}
   - component: {fileID: 912067468}
   - component: {fileID: 912067471}
+  - component: {fileID: 912067472}
   m_Layer: 4
   m_Name: StartPoint
-  m_TagString: Untagged
+  m_TagString: Respawn
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3481,6 +3482,21 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &912067472
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 912067467}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4fa765a8e0d6749c39376c48f5659c11, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SavePointNum: 0
+  Player: {fileID: 536527571}
+  doubleJumpFlag: 0
 --- !u!1 &928889244
 GameObject:
   m_ObjectHideFlags: 0
