@@ -641,10 +641,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7135b66636a1644d292424d27284f500, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  obj: {fileID: 0}
-  length: 0
-  angle: 0
-  x: 0
 --- !u!1 &200420713
 GameObject:
   m_ObjectHideFlags: 0
@@ -3305,7 +3301,7 @@ GameObject:
   - component: {fileID: 912067471}
   m_Layer: 4
   m_Name: StartPoint
-  m_TagString: Respawn
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
