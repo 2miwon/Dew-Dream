@@ -9,9 +9,11 @@ public class Button : MonoBehaviour
     bool ButtonOn;
     public int type;
     float smoothness = 0.1f;
+    AudioSource audioSource;
     void Awake(){
         //collider = obj.GetComponent<BoxCollider>();
         ButtonOn = false;
+        audioSource = GetComponent<AudioSource>();
     }
     void Start(){
 
@@ -25,6 +27,7 @@ public class Button : MonoBehaviour
     void OnTriggerEnter(Collider collision){
         if(!ButtonOn){
             ButtonOn = true;
+            audioSource.Play();
             obj.transform.Translate(new Vector3(0,0.3f,0));
             if(type == 0) StartCoroutine("OpenDoor");
         }

@@ -53,6 +53,7 @@ public class WeakPlatform : MonoBehaviour
         gameObject.GetComponent<BoxCollider>().enabled = false;
         transform.parent.GetComponent<BoxCollider>().enabled = false;
         SetTransparent();
+        StartCoroutine("BreakAnimation");
         exist = false;
         Invoke("Respawn", RespwanTime);
     }
@@ -65,4 +66,8 @@ public class WeakPlatform : MonoBehaviour
     void SetTransparent(){
         rend.material = transparentMaterial;
     }
+    /*
+    public IEnumerator BreakAnimation(){
+
+    }*/
 }

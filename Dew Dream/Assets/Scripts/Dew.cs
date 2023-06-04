@@ -48,7 +48,13 @@ public class Dew : MonoBehaviour
     int readValInt;
     SerialPort sp = new SerialPort("COM3", 9600);
 
-    public AudioClip audioJump;
+    [System.Serializable]
+    public struct Sound
+    {
+        public string name;
+        public AudioClip audio;
+    }
+    public Sound[] Sounds;
     AudioSource audioSource;
 
     void Awake(){
@@ -89,6 +95,10 @@ public class Dew : MonoBehaviour
     //
     // Basic
     //
+    void Audio(int num){
+        audioSource.clip = Sounds[num].audio;
+        audioSource.Play();
+    }
     bool Delay(ref int val){return val-- <= 0;}
     //
     // Arduino
@@ -112,9 +122,7 @@ public class Dew : MonoBehaviour
             rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
             jumpDelay = 60;
             //anim.SetBool("isJumping", true);
-
-            audioSource.clip = audioJump;
-            audioSource.Play();
+            Audio(0);
         }
     }
     void Move(){
@@ -195,7 +203,7 @@ public class Dew : MonoBehaviour
             ColorChange(rend);
             yield return new WaitForSeconds(smoothness);
         }
-        Debug.Log("Die");
+        OnDie();
     }
     void ColorChange(Renderer rend){
         rend.material.color = Color.Lerp(colorEnd, colorStart, lifetime/fullLife);
@@ -221,11 +229,14 @@ public class Dew : MonoBehaviour
         lastMod = m;
     }
     void OnDie(){
-        Invoke("Respawn", 1.5f);
-        lifetime = fullLife;
-        StartCoroutine("LifeDecrease");
+        realSpeed = 0;
+        Audio(1);
+        Invoke("Respawn", 2.5f);
     }
     void Respawn(){
+        realSpeed = speed;
+        lifetime = fullLife;
+        StartCoroutine("LifeDecrease");
         switch(savePointNum){
             case 0:
                 transform.position = new Vector3(0,0,0);
@@ -244,11 +255,14 @@ public class Dew : MonoBehaviour
         camera.transform.position = new Vector3(obj.transform.position.x, obj.transform.position.y, -CameraDistance);
     }
     IEnumerator ZoomIn(){
-        cameraLock = true;
-        while(true){
-            
+        //cameraLock = true;
+        while(CameraDistance > 2){
+            //camera.transform.Translate = new Vector3(0, 0, smoothness);
+            CameraDistance -= smoothness;
             yield return new WaitForSeconds(smoothness);
         }
-        cameraLock = false;
+        CameraDistance = 10f + 5f * ((float)mod-1);
+        //cameraLock = false;
     }
+
 }  

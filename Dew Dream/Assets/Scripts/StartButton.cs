@@ -6,10 +6,17 @@ using UnityEngine.SceneManagement;
 
 public class StartButton : MonoBehaviour
 {
+    //public AudioClip sound;
+    AudioSource audioSource;
+    public void Start(){
+        audioSource = GetComponent<AudioSource>();
+        //audioSource.clip = sound;
+    }
     // Start is called before the first frame update
     public void Change()
     {
-        SceneManager.LoadScene("SampleScene");
+        audioSource.Play();
+        SceneManager.LoadScene("Stage");
     }
 
 }
