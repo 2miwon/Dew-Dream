@@ -19,6 +19,7 @@ public class SavePoint : MonoBehaviour
     void FixedUpdate(){
 
     }
+    /*
     void OnTriggerEnter(Collider collision){
         if(collision.GetComponent<Collider>().CompareTag("Player")){
             if(Player.GetComponent<Dew>().savePointNum < SavePointNum){
@@ -29,5 +30,5 @@ public class SavePoint : MonoBehaviour
                 Player.GetComponent<Dew>().savePointNum = SavePointNum;
             }
         }
-    }
+    }*/
 }
