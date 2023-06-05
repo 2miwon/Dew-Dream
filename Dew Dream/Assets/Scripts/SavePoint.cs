@@ -7,8 +7,10 @@ public class SavePoint : MonoBehaviour
     public int SavePointNum;
     public GameObject Player;
     public bool doubleJumpFlag;
+    //ParticleSystem effect;
     void Awake(){
         //activate = false;
+        //effect =GetComponent<ParticleSystem>();
     }
     void Start(){
 

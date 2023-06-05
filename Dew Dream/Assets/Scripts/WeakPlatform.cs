@@ -12,17 +12,22 @@ public class WeakPlatform : MonoBehaviour
     public float MaxLoad;
     bool exist;
     private Material originalMaterial;
-    private Material transparentMaterial;
+    public Material transparentMaterial;
+    public AudioSource audioSource;
+    public ParticleSystem effect;
+
     void Awake(){
         exist = true;
         //respawnDelay = (int) (RespwanTime * 60.0f);
         rend = transform.parent.GetComponent<Renderer>();
+        audioSource = GetComponent<AudioSource>();
+        effect = transform.parent.GetComponent<ParticleSystem>();
         //breakLatency = -1;
     }
     void Start(){
         originalMaterial = transform.parent.GetComponent<Renderer>().material;
-        transparentMaterial = new Material(originalMaterial); // 원래의 머티리얼을 복사하여 새로운 투명한 머티리얼 생성
-        transparentMaterial.color = new Color(1f, 1f, 1f, 0.5f); // 투명도 조절 (4번째)
+        //transparentMaterial = new Material(originalMaterial); // 원래의 머티리얼을 복사하여 새로운 투명한 머티리얼 생성
+        //transparentMaterial.color = new Color(1f, 1f, 1f, 0.5f); // 투명도 조절 (4번째)
     }
     void Update(){
         
@@ -41,7 +46,7 @@ public class WeakPlatform : MonoBehaviour
     void OnTriggerEnter(Collider collision){
         try{
             if(collision.GetComponent<Collider>().GetComponent<Dew>().mod >= MaxLoad){
-                Debug.Log("check");
+                //Debug.Log("check");
                 Invoke("Break", BreakTime);
             }
         }catch{
@@ -53,7 +58,9 @@ public class WeakPlatform : MonoBehaviour
         gameObject.GetComponent<BoxCollider>().enabled = false;
         transform.parent.GetComponent<BoxCollider>().enabled = false;
         SetTransparent();
-        StartCoroutine("BreakAnimation");
+        audioSource.Play();
+        //StartCoroutine("BreakAnimation");
+        effect.Play();
         exist = false;
         Invoke("Respawn", RespwanTime);
     }
