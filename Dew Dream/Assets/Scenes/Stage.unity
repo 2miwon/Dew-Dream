@@ -11746,9 +11746,9 @@ MonoBehaviour:
   - name: Reapawn
     audio: {fileID: 8300000, guid: 635723546d4ce4c36863f5a37c0a4768, type: 3}
   - name: SizeUP
-    audio: {fileID: 8300000, guid: 6df07db34113149e7af3d6257f7fb061, type: 3}
-  - name: SizeDown
     audio: {fileID: 8300000, guid: a25beaf06921a4f65809dd72c998b383, type: 3}
+  - name: SizeDown
+    audio: {fileID: 8300000, guid: 6df07db34113149e7af3d6257f7fb061, type: 3}
   - name: Die
     audio: {fileID: 8300000, guid: 6915deb0b31d94d0c9f5de21172e90db, type: 3}
   transparentMaterial: {fileID: 2100000, guid: 5bbdae589fdbc47d0ad2569cb027021e, type: 2}
