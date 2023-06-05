@@ -17,7 +17,10 @@ using System.IO.Ports;
         public string name;
         public ParticleSystem effect;
     }
-
+[System.Serializable]
+    public struct UI{
+        public Canvas image;
+    }
 public class Dew : MonoBehaviour
 {
     public float speed;
@@ -39,7 +42,7 @@ public class Dew : MonoBehaviour
     double lastMod;
     bool LifeUP;
     public int savePointNum;
-    bool DoubleJump = false;
+    //bool DoubleJump = false;
 
     float smoothness = 0.02f;
     float lifetime;
@@ -55,10 +58,17 @@ public class Dew : MonoBehaviour
     Color colorStart = new Color(57/255f, 221/255f, 208/255f, 255/255f);
     Color colorEnd = new Color(211/255f, 211/255f, 211/255f, 125/255f);
 
+    GameObject fade;
+    GameObject end;
+    Color FadeColor = new Color(0.0f, 0.0f, 0.0f, 255/255f);
+    Color FadeTrans = new Color(0.0f, 0.0f, 0.0f, 0.0f);
+    Color endColor;
+
     private Camera camera;
     public float CameraDistance;
-    bool Freeze;
+    bool freeze;
     bool MoveLock;
+    bool FreezeAnyKey;
 
     int readValInt;
     SerialPort sp = new SerialPort("COM3", 9600);
@@ -71,23 +81,29 @@ public class Dew : MonoBehaviour
 
     public Particles[] Effects;
 
+    public UI[] Images;
     void Awake(){
+        ArduinoSetup();
+
         rigid = GetComponent<Rigidbody>();
         graphic = transform.GetChild(0);
         rend = transform.GetChild(0).GetComponent<Renderer>();
         obj = GameObject.Find("Player");
         collider = GetComponent<CapsuleCollider>();
         camera = Camera.main;
-
+        fade = GameObject.Find("Fade");
+        end = GameObject.Find("EndPoint");
+        endColor = end.transform.GetComponent<Renderer>().material.color;
         lifetime = fullLife;
-        
+
         mod = 1;
         LifeUP = false;
         savePointNum = 0;
         lastMod = mod;
         MaxDistance = groundMaxDistance;
         realSpeed = speed;
-        Freeze = false;
+        freeze = false;
+        FreezeAnyKey = false;
         audioSource = GetComponent<AudioSource>();
     }
     void Start(){
@@ -98,12 +114,14 @@ public class Dew : MonoBehaviour
     {
         //Debug.Log(lifetime);
         if(!MoveLock){
+            FreezeKey();
             if(Delay(ref jumpDelay)) Jump();
             if(Delay(ref jumpDelay)) onGround();
         }
         limitSpeed();
     }
     void FixedUpdate(){
+        ArduinoInput();
         changeCamera();
         if(!MoveLock){
             Move();
@@ -124,25 +142,46 @@ public class Dew : MonoBehaviour
         audioSource.Play();
     }
     bool Delay(ref int val){return val-- <= 0;}
+    void Freeze(){
+        if(!freeze) Time.timeScale = 0;
+        else 
+        freeze = !freeze;
+    }
+    void UnFreeze(){
+        Time.timeScale = 1.0f;
+    }
+    void FreezeKey(){
+        if(Input.GetKeyDown(KeyCode.P)) Freeze();
+    }
     //
     // Arduino
     //
     void ArduinoSetup(){
-        sp.Open();
-        sp.ReadTimeout = 16;
-        Debug.Log("Opening Port");
+        try{
+            sp.Open();
+            sp.ReadTimeout = 16;
+            Debug.Log("Opening Port");
+        } catch {
+            readValInt = 0;
+            Debug.Log("Warn :: Arduino Input Not Available");
+        }
+        
     }
     void ArduinoInput(){
-        sp.Write("c");
-        string readVal = sp.ReadLine();
-        readValInt = int.Parse(readVal);
+        if(readValInt > 0){
+            sp.Write("c");
+            string readVal = sp.ReadLine();
+            readValInt = int.Parse(readVal);
+        }
     }
     //
     // Player Moving
     //
     void Jump(){
-        if (((Input.GetButtonDown("Jump")|| readValInt == 1) &&jumpChance-->0))
-        {
+        if (
+            ((Input.GetButtonDown("Jump")|| readValInt == 1) &&jumpChance-->0)
+            || readValInt >= 20
+        ){
             rigid.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
             jumpDelay = 60;
             //anim.SetBool("isJumping", true);
@@ -169,10 +208,12 @@ public class Dew : MonoBehaviour
                 //if(DoubleJump) jumpChance = 2;
                 //else jumpChance = 1;
                 jumpChance = savePointNum + 1;
-                if(rigid.velocity.y < -2)Effects[0].effect.Play();
-            } 
+                if(rigid.velocity.y < -2){
+                    Effects[0].effect.Play();
+                    Audio(5);
+                }
+            }
         }
-        
     }
     void OnDrawGizmos(){
         Gizmos.color = Color.red;
@@ -205,7 +246,8 @@ public class Dew : MonoBehaviour
             Effects[0].effect.Play();
         }
         if(collision.GetComponent<Collider>().CompareTag("Finish")){
-            //화면 어두워짐
+            StartCoroutine("EndFade");
+            collision.GetComponent<Collider>().GetComponent<AudioSource>().Play();
             Invoke("Ending", 2.0f);
             
         }
@@ -234,7 +276,7 @@ public class Dew : MonoBehaviour
         while(lifetime > 0){
             if(LifeUP && lifetime <= fullLife) lifetime += 15 * smoothness;
             else lifetime -= smoothness;
-            ColorChange(rend);
+            if(!MoveLock)ColorChange(rend);
             yield return new WaitForSeconds(smoothness);
         }
         OnDie();
@@ -243,6 +285,8 @@ public class Dew : MonoBehaviour
         rend.material.color = Color.Lerp(colorEnd, colorStart, lifetime/fullLife);
     }
     void CheckNumKey(){
+        int jumpVal = readValInt % 20;
+        if(jumpVal != 0) mod = 0.5 + jumpVal * 0.25;
         for(int i = 0; i<keyCodes.Length; i++){
             if(Input.GetKey(keyCodes[i])){ 
                 mod = 0.5 + i * 0.25;
@@ -267,13 +311,14 @@ public class Dew : MonoBehaviour
         Audio(1);
         Audio(4);
         MoveLock = true;
-        //StartCoroutine("ZoomIn");
         rigid.velocity = new Vector3(0,0,0);
         rend.material = transparentMaterial;
         Effects[1].effect.Play();
         Invoke("Respawn", 2.0f);
     }
     void Respawn(){
+        StartCoroutine("FadeInOut");
+        //FadeIn();
         CameraDistance = 10f + 5f * ((float)mod-1);
         MoveLock = false;
         realSpeed = speed;
@@ -290,6 +335,7 @@ public class Dew : MonoBehaviour
             default:
                 break;
         }
+        //Invoke("FadeOut", 0.3f);
     }
     void Reset(){
         if (Input.GetKey(KeyCode.R)){
@@ -315,10 +361,31 @@ public class Dew : MonoBehaviour
         //cameraLock = false;
     }
     IEnumerator FadeInOut(){
-        while(CameraDistance > 1){
-            //camera.transform.Translate = new Vector3(0, 0, smoothness);
-            CameraDistance -= 25 *smoothness;
+        float progress = 1;
+        while(progress > 0){
+            progress -= 2 * smoothness;
+            fade.transform.GetComponent<Renderer>().material.color = Color.Lerp(FadeTrans, FadeColor, progress);
             yield return new WaitForSeconds(smoothness);
         }
+        /*
+        while(progress > 0){
+            progress -= smoothness;
+            fade.transform.GetComponent<Renderer>().material.color = Color.Lerp(FadeColor, FadeTrans, progress);
+            yield return new WaitForSeconds(smoothness);
+        }*/
+    }
+    IEnumerator EndFade(){
+        float progress = 0;
+        while(progress < 1){
+            progress += smoothness/2;
+            end.transform.GetComponent<Renderer>().material.color = Color.Lerp(endColor, FadeColor, progress);
+            yield return new WaitForSeconds(smoothness);
+        }
+    }
+    //
+    // UI
+    //
+    void DisplayImage(){
+        
     }
 }  
