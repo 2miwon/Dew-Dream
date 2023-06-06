@@ -12027,6 +12027,8 @@ MonoBehaviour:
     audio: {fileID: 8300000, guid: 6915deb0b31d94d0c9f5de21172e90db, type: 3}
   - name: Ground
     audio: {fileID: 8300000, guid: 397f887ca5a702240b4c9338fe65fb9c, type: 3}
+  - name: Click
+    audio: {fileID: 8300000, guid: 7bc58b551e1344f31902790255709cde, type: 3}
   transparentMaterial: {fileID: 2100000, guid: 5bbdae589fdbc47d0ad2569cb027021e, type: 2}
   Effects:
   - name: Splash
@@ -12036,11 +12038,16 @@ MonoBehaviour:
   - name: Evaporation
     effect: {fileID: 70829779}
   Images:
-  - image: {fileID: 1921224645}
   - image: {fileID: 178403067}
+    flag: 0
+  - image: {fileID: 1921224645}
+    flag: 0
   - image: {fileID: 1276979335}
+    flag: 0
   - image: {fileID: 1395646035}
+    flag: 0
   - image: {fileID: 520481591}
+    flag: 0
 --- !u!4 &536527573
 Transform:
   m_ObjectHideFlags: 0

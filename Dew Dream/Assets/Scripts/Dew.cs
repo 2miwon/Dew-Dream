@@ -4,7 +4,7 @@ using UnityEngine;
 
 using UnityEngine.SceneManagement;
 using System.IO.Ports;
-
+using UnityEngine.UI;
 
 [System.Serializable]
     public struct Sound
@@ -20,6 +20,7 @@ using System.IO.Ports;
 [System.Serializable]
     public struct UI{
         public Canvas image;
+        public bool flag;
     }
 public class Dew : MonoBehaviour
 {
@@ -82,6 +83,7 @@ public class Dew : MonoBehaviour
     public Particles[] Effects;
 
     public UI[] Images;
+    int disImg;
     void Awake(){
         ArduinoSetup();
 
@@ -105,10 +107,12 @@ public class Dew : MonoBehaviour
         freeze = false;
         FreezeAnyKey = false;
         audioSource = GetComponent<AudioSource>();
+        disImg = -1;
     }
     void Start(){
         originalMaterial = rend.material;
         StartCoroutine("LifeDecrease");
+        DisplayImage(0);
     }
     void Update()
     {
@@ -123,6 +127,9 @@ public class Dew : MonoBehaviour
     void FixedUpdate(){
         ArduinoInput();
         changeCamera();
+        SerializeImage(0, 1);
+        SerializeImage(1, 2);
+        SerializeImage(3, 4);
         if(!MoveLock){
             Move();
             CheckNumKey();
@@ -143,15 +150,32 @@ public class Dew : MonoBehaviour
     }
     bool Delay(ref int val){return val-- <= 0;}
     void Freeze(){
-        if(!freeze) Time.timeScale = 0;
-        else 
-        freeze = !freeze;
+        freeze = true;
+        Time.timeScale = 0;
     }
     void UnFreeze(){
+        freeze = false;
         Time.timeScale = 1.0f;
     }
     void FreezeKey(){
-        if(Input.GetKeyDown(KeyCode.P)) Freeze();
+        if(FreezeAnyKey){
+            if(Input.anyKeyDown){
+                FreezeAnyKey = false;
+                Audio(6);
+                /*
+                for(int i=0; i<Images.Length;i++){
+                    Images[i].image.GetComponent<RawImage>().enabled = false;
+                }*/
+                Images[disImg].image.GetComponent<RawImage>().enabled = false;
+                Images[disImg].flag = true;
+                UnFreeze();
+            }
+        }else{
+            if(Input.GetKeyDown(KeyCode.P)){
+                if(!freeze) Freeze();
+                else UnFreeze();
+            } 
+        }
     }
     //
     // Arduino
@@ -240,6 +264,7 @@ public class Dew : MonoBehaviour
             int Snum = collision.GetComponent<Collider>().GetComponent<SavePoint>().SavePointNum;
             if(savePointNum < Snum){
                 savePointNum = Snum;
+                DisplayImage(3);
                 collision.GetComponent<Collider>().GetComponent<AudioSource>().Play();
             }
             collision.GetComponent<Collider>().transform.parent.GetComponent<AudioSource>().Play();
@@ -385,7 +410,17 @@ public class Dew : MonoBehaviour
     //
     // UI
     //
-    void DisplayImage(){
-        
+    void DisplayImage(int n){
+        if(!Images[n].flag){
+            Freeze();
+            FreezeAnyKey = true;
+            Images[n].image.GetComponent<RawImage>().enabled = true;
+            disImg = n;
+        }
+    }
+    void SerializeImage(int prev, int next){
+        if(Images[prev].flag){
+            DisplayImage(next);
+        }
     }
 }  
