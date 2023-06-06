@@ -192,11 +192,14 @@ public class Dew : MonoBehaviour
         
     }
     void ArduinoInput(){
-        if(readValInt > 0){
-            sp.Write("c");
+	try{
+	    if(readValInt >= 0){
+            p.Write("c");
             string readVal = sp.ReadLine();
             readValInt = int.Parse(readVal);
         }
+	} catch {}
+        
     }
     //
     // Player Moving
@@ -310,7 +313,7 @@ public class Dew : MonoBehaviour
         rend.material.color = Color.Lerp(colorEnd, colorStart, lifetime/fullLife);
     }
     void CheckNumKey(){
-        int jumpVal = readValInt % 20;
+        int jumpVal = readValInt % 10;
         if(jumpVal != 0) mod = 0.5 + jumpVal * 0.25;
         for(int i = 0; i<keyCodes.Length; i++){
             if(Input.GetKey(keyCodes[i])){ 
