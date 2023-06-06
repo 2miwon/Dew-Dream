@@ -194,7 +194,7 @@ public class Dew : MonoBehaviour
     void ArduinoInput(){
 	try{
 	    if(readValInt >= 0){
-            p.Write("c");
+            sp.Write("c");
             string readVal = sp.ReadLine();
             readValInt = int.Parse(readVal);
         }
