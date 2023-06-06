@@ -75,6 +75,7 @@ public class Dew : MonoBehaviour
 
     int readValInt;
     SerialPort sp = new SerialPort("COM3", 9600);
+    bool ArduinoAvailable;
 
     public Sound[] Sounds;
     AudioSource audioSource;
@@ -129,13 +130,12 @@ public class Dew : MonoBehaviour
         }
         limitSpeed();
 
+        if(ArduinoAvailable){
+            sp.Write("c");
+            ArduinoInput();
+        }
 
-        sp.Write("c");
-
-
-        ArduinoInput();
-
-        Debug.Log(readValInt);
+        //Debug.Log(readValInt);
     }
     void FixedUpdate()
     {
@@ -212,11 +212,13 @@ public class Dew : MonoBehaviour
         {
             sp.Open();
             sp.ReadTimeout = 16;
+            ArduinoAvailable = true;
             Debug.Log("Opening Port");
         }
         catch
         {
             readValInt = 0;
+            ArduinoAvailable = false;
             Debug.Log("Warn :: Arduino Input Not Available");
         }
 
